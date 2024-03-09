@@ -1,42 +1,494 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap");
+
+:root {
+	--body-font: "Poppins", sans-serif;
+	--primary-color: #7d52ff;
+	--primary-color-hover: #a166ff;
+	--body-color: rgb(240, 237, 245);
+	--text-color: rgb(46, 51, 63);
+	--text-color-dark: rgb(65, 78, 78);
+	--border-color: rgb(192, 190, 190);
+	--bg-color: rgba(251, 251, 251, 0.25);
+	--circles-color: hsl(255, 20%, 25%, 0.25);
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+body {
+	font-family: var(--body-font) !important;
+	width: 100%;
+	height: 100dvh;
+	overflow: hidden;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.area {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	z-index: -1;
+	background: radial-gradient(var(--body-color), var(--primary-color));
 }
 
-.card {
-  padding: 2em;
+.circles {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
 }
 
-.read-the-docs {
-  color: #888;
+.circles li {
+	position: absolute;
+	display: block;
+	list-style: none;
+	width: 20px;
+	height: 20px;
+	background: var(--circles-color);
+	animation: circlesAnimation 35s linear infinite;
+	bottom: -150px;
+}
+
+.circles li:nth-child(1) {
+	left: 17%;
+	width: 80px;
+	height: 80px;
+
+	animation-delay: 0s;
+}
+
+.circles li:nth-child(2) {
+	left: 10%;
+	width: 20px;
+	height: 20px;
+
+	animation-delay: 2s;
+
+	animation-duration: 12s;
+}
+
+.circles li:nth-child(3) {
+	left: 15%;
+	width: 20px;
+	height: 20px;
+
+	animation-delay: 4s;
+}
+
+.circles li:nth-child(4) {
+	left: 40%;
+	width: 60px;
+	height: 60px;
+	animation-delay: 0s;
+	animation-duration: 18s;
+}
+
+.circles li:nth-child(5) {
+	left: 65%;
+	width: 20px;
+	height: 20px;
+	animation-delay: 0s;
+}
+
+.circles li:nth-child(6) {
+	left: 75%;
+	width: 110px;
+	height: 110px;
+	animation-delay: 3s;
+}
+
+.circles li:nth-child(7) {
+	left: 25%;
+	width: 150px;
+	height: 150px;
+	animation-delay: 7s;
+}
+
+.circles li:nth-child(8) {
+	left: 50%;
+	width: 25px;
+	height: 25px;
+	animation-delay: 15s;
+	animation-duration: 45s;
+}
+
+.circles li:nth-child(9) {
+	left: 20%;
+	width: 15px;
+	height: 15px;
+	animation-delay: 2s;
+	animation-duration: 35s;
+}
+
+.circles li:nth-child(10) {
+	left: 55%;
+	width: 150px;
+	height: 150px;
+	animation-delay: 0s;
+	animation-duration: 11s;
+}
+
+@keyframes circlesAnimation {
+	0% {
+		transform: translateY(0) rotate(0deg);
+		opacity: 1;
+
+		border-radius: 0;
+	}
+
+	100% {
+		transform: translateY(-1000px) rotate(720deg);
+		opacity: 0;
+
+		border-radius: 50%;
+	}
+}
+
+.form-container {
+	width: 100%;
+	max-width: 400px;
+	border-radius: 0.75rem;
+	padding: 1.5rem;
+	color: var(--text-color);
+	background-color: var(--bg-color) !important;
+	backdrop-filter: blur(4px);
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3), 0 5px 20px rgba(0, 0, 0, 0.2) !important;
+	border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.title {
+	text-align: center;
+	font-size: 1.5rem;
+	line-height: 2rem;
+	font-weight: 700;
+}
+
+.form {
+	margin-top: 0.85rem;
+}
+
+.input-group {
+	margin-top: 0.25rem;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	margin-bottom: 0.5rem;
+}
+
+.input-group label {
+	display: block;
+	color: var(--text-color-dark);
+	margin-bottom: 4px;
+}
+
+.input-group input:not(.cyberpunk-checkbox) {
+	width: 100%;
+	border-radius: 4px;
+	border: 1px solid var(--border-color);
+	outline: 0;
+	background-color: var(--bg-color);
+	padding: 0.7rem 1rem;
+	color: #8479a1;
+	transition: 300ms ease;
+	letter-spacing: 0.5px;
+}
+
+.input-group input:hover {
+	border-color: #12121283;
+}
+.input-group input:focus {
+	color: #2b1357;
+	border-color: var(--primary-color);
+}
+
+.link a,
+.resend {
+	color: var(--text-color);
+	text-decoration: none;
+	font-size: 14px;
+	outline: none;
+	cursor: pointer;
+	transition: text-decoration 300ms ease-in-out, font-weight 0ms ease-in-out;
+}
+.resend {
+	font-weight: 700;
+}
+.link a:hover,
+.link a:focus {
+	text-decoration: underline var(--primary-color);
+}
+
+.button {
+	display: block;
+	width: 100%;
+	background-color: var(--primary-color);
+	text-align: center;
+	color: rgb(251, 251, 251);
+	border: none;
+	font-weight: 600;
+	cursor: pointer;
+	transition: 350ms ease-in-out;
+	outline-color: var(--primary-color);
+}
+
+.button:hover {
+	color: rgb(252, 252, 252);
+	background-color: var(--primary-color-hover);
+}
+
+.social-message {
+	display: flex;
+	align-items: center;
+	padding-top: 1rem;
+}
+
+.line {
+	height: 1px;
+	flex: 1 1 0%;
+	background-color: rgb(167, 166, 166);
+}
+
+.social-message .message {
+	padding-left: 0.75rem;
+	padding-right: 0.75rem;
+	font-size: 0.875rem;
+	line-height: 1.25rem;
+	color: var(--text-color-dark);
+}
+
+.social-icons {
+	display: flex;
+	justify-content: center;
+}
+
+.social-icons .icon {
+	border-radius: 0.125rem;
+	padding: 0.75rem;
+	border: none;
+	background-color: transparent;
+	margin-left: 8px;
+}
+
+.social-icons .icon svg {
+	height: 1.25rem;
+	width: 1.25rem;
+	fill: var(--text-color);
+	cursor: pointer;
+}
+
+.signup {
+	text-align: center;
+	font-size: 0.75rem;
+	line-height: 1rem;
+	color: var(--text-color-dark);
+}
+
+::placeholder,
+.link,
+.button {
+	user-select: none;
+}
+.button[disabled] {
+	cursor: wait;
+}
+.button span {
+	line-height: 40px;
+}
+
+svg.loader {
+	width: 30px;
+	margin-top: 3px;
+	padding: 2px 0;
+	transform-origin: center;
+	animation: rotate4 2s linear infinite;
+}
+
+svg.loader circle {
+	fill: none;
+	stroke: white;
+	stroke-width: 3;
+	stroke-dasharray: 1, 200;
+	stroke-dashoffset: 0;
+	stroke-linecap: round;
+	animation: dash4 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate4 {
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes dash4 {
+	0% {
+		stroke-dasharray: 1, 200;
+		stroke-dashoffset: 0;
+	}
+
+	50% {
+		stroke-dasharray: 90, 200;
+		stroke-dashoffset: -35px;
+	}
+
+	100% {
+		stroke-dashoffset: -125px;
+	}
+}
+
+.cyberpunk-checkbox {
+	appearance: none;
+	width: 14px;
+	aspect-ratio: 1;
+	border: 2px solid var(--primary-color);
+	border-radius: 5px;
+	background-color: transparent;
+	position: relative;
+	margin-right: 3px;
+	cursor: pointer;
+}
+
+.cyberpunk-checkbox:before {
+	content: "";
+	background-color: var(--primary-color);
+	display: block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%) scale(0);
+	width: 7px;
+	height: 7px;
+	border-radius: 3px;
+	transition: all 0.3s ease-in-out;
+}
+
+.cyberpunk-checkbox:checked:before {
+	transform: translate(-50%, -50%) scale(1);
+	opacity: 1;
+}
+
+.cyberpunk-checkbox:checked {
+	animation: jelly 500ms ease-in-out;
+	transition: all 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46) 0.1s;
+}
+
+.cyberpunk-checkbox-label {
+	font-size: 14px;
+	cursor: pointer;
+	user-select: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 7px;
+	max-width: max-content;
+}
+
+.cyberpunk-checkbox-label:hover {
+	background-color: var(--body-color);
+	border-radius: 4px;
+	transition: 500ms ease;
+}
+
+@keyframes jelly {
+	from {
+		transform: scale(1, 1);
+	}
+
+	30% {
+		transform: scale(1.25, 0.75);
+	}
+
+	40% {
+		transform: scale(0.75, 1.25);
+	}
+
+	50% {
+		transform: scale(1.15, 0.85);
+	}
+
+	65% {
+		transform: scale(0.95, 1.05);
+	}
+
+	75% {
+		transform: scale(1.05, 0.95);
+	}
+
+	to {
+		transform: scale(1, 1);
+	}
+}
+
+@keyframes ripple-33 {
+	from {
+		transform: scale(0);
+		opacity: 1;
+	}
+
+	to {
+		opacity: 0;
+		transform: scale(20);
+	}
+}
+
+/* Glassmorphism for popovers */
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation8.MuiPopover-paper.MuiMenu-paper.MuiMenu-paper.css-3dzjca-MuiPaper-root-MuiPopover-paper-MuiMenu-paper,
+.css-6hp17o-MuiList-root-MuiMenu-list {
+	background-color: var(--bg-color) !important;
+	backdrop-filter: blur(3px) !important;
+	color: var(--text-color);
+}
+
+/* Glassmorphism for dialogs */
+.css-1t1j96h-MuiPaper-root-MuiDialog-paper {
+	color: var(--text-color);
+	background-color: rgba(251, 251, 251, 0.25) !important;
+	backdrop-filter: blur(4px);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Style for send message chat component */
+#message-input {
+	width: 100%;
+	height: 100%;
+	border-radius: 4px;
+	border: 1px solid var(--border-color);
+	outline: 0;
+	font-family: var(--body-font);
+	background-color: var(--bg-color);
+	padding: 0.85rem 1rem;
+	color: #474350;
+	transition: 300ms ease;
+	resize: none;
+	backdrop-filter: blur(8px);
+}
+#message-input::-webkit-scrollbar {
+	display: none;
+}
+#message-input:hover {
+	border-color: #12121283;
+}
+#message-input:focus {
+	color: #271646;
+	border-color: var(--primary-color);
+}
+
+::-webkit-scrollbar {
+	width: 6px;
+}
+
+::-webkit-scrollbar-track {
+	background: rgb(31, 31, 31,0.2);
+	border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #e9e9e960;
+	border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #b8b7b7;
 }

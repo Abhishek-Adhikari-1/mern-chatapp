@@ -2,18 +2,12 @@ import generateTokenAndSetCookie from "../utilities/generateToken.js";
 import User from "./../models/user.model.js";
 import bcryptjs from "bcryptjs";
 
+// Signup using Abstract API
 export const signup = async (req, res) => {
 	try {
-		const { fullName, username, password, confirmPassword, gender } =
-			req.body;
+		const { fullName, email, password, confirmPassword, gender } = req.body;
 
-		if (
-			!fullName ||
-			!username ||
-			!password ||
-			!confirmPassword ||
-			!gender
-		) {
+		if (!fullName || !email || !password || !confirmPassword || !gender) {
 			return res.status(400).json({ error: "All fields are required" });
 		}
 
@@ -25,7 +19,7 @@ export const signup = async (req, res) => {
 		}
 
 		const usernameRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (!usernameRegex.test(username)) {
+		if (!usernameRegex.test(email)) {
 			return res
 				.status(400)
 				.json({ error: "Username must be a valid email address" });
@@ -41,7 +35,31 @@ export const signup = async (req, res) => {
 			return res.status(400).json({ error: "Passwords do not match" });
 		}
 
-		const user = await User.findOne({ username });
+		const validationResponse = await fetch(
+			`https://emailvalidation.abstractapi.com/v1/?api_key=e5549f9aaf1842c086df0a983e6a1bc0&email=${email}`
+		);
+		const validationData = await validationResponse.json();
+
+		var newEmail = email;
+		if (validationData.autocorrect !== "") {
+			newEmail = validationData.autocorrect;
+		}
+
+		if (
+			!validationData.is_valid_format.value ||
+			!validationData.is_smtp_valid.value ||
+			!validationData.is_valid_format.value
+		)
+			return res.status(400).json({
+				error: `${validationData.email} is not a valid email`,
+			});
+
+		if (validationData.deliverability !== "DELIVERABLE")
+			return res.status(400).json({
+				error: `${validationData.email} can't recieve any mail or invalid mail address`,
+			});
+
+		const user = await User.findOne({ email: newEmail });
 
 		if (user) {
 			return res.status(400).json({ error: "User already exists" });
@@ -52,11 +70,11 @@ export const signup = async (req, res) => {
 
 		const profilePic = `https://avatar.iran.liara.run/public/${
 			gender === "male" ? "boy" : "girl"
-		}?username=${username}`;
+		}?username=${newEmail}`;
 
 		const newUser = new User({
 			fullName,
-			username,
+			email: newEmail,
 			password: hashedPassword,
 			gender,
 			profilePic,
@@ -67,10 +85,10 @@ export const signup = async (req, res) => {
 			await newUser.save();
 
 			res.status(200).json({
-				message: `Account created as: ${newUser.fullName}`,
+				message: `Account created for: ${newUser.email} as ${newUser.fullName}`,
 				_id: newUser._id,
 				fullName: newUser.fullName,
-				username: newUser.username,
+				email: newUser.email,
 				profilePicture: newUser.profilePicture,
 			});
 		} else {
@@ -84,13 +102,13 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
 	try {
-		const { username, password } = req.body;
+		const { email, password } = req.body;
 
-		if (!username || !password) {
+		if (!email || !password) {
 			return res.status(400).json({ error: "All fields are required" });
 		}
 
-		const user = await User.findOne({ username });
+		const user = await User.findOne({ email });
 
 		const isPasswordValid = await bcryptjs.compare(
 			password,
@@ -98,9 +116,7 @@ export const login = async (req, res) => {
 		);
 
 		if (!user || !isPasswordValid) {
-			return res
-				.status(400)
-				.json({ error: "Invalid username or password" });
+			return res.status(400).json({ error: "Invalid email or password" });
 		}
 
 		generateTokenAndSetCookie(user._id, res);
@@ -109,7 +125,7 @@ export const login = async (req, res) => {
 			message: `Welcome ${user.fullName}`,
 			_id: user._id,
 			fullName: user.fullName,
-			username: user.username,
+			email: user.email,
 			profilePic: user.profilePic,
 		});
 	} catch (error) {
@@ -121,10 +137,115 @@ export const login = async (req, res) => {
 export const logout = (req, res) => {
 	try {
 		res.clearCookie("token");
-		
 		res.status(200).json({ message: "Logged out successfully" });
 	} catch (error) {
 		console.log("Error in logout controller: ", error.message);
 		res.status(500).json({ error: "Internal Server Error" });
 	}
 };
+
+// Signup using Hunter API
+// export const signup = async (req, res) => {
+// 	try {
+// 		const { fullName, email, password, confirmPassword, gender } = req.body;
+
+// 		if (!fullName || !email || !password || !confirmPassword || !gender) {
+// 			return res.status(400).json({ error: "All fields are required" });
+// 		}
+
+// 		const fullNameRegex = /^[a-zA-Z ]+$/;
+// 		if (!fullNameRegex.test(fullName)) {
+// 			return res
+// 				.status(400)
+// 				.json({ error: "Full name must contain only alphabets" });
+// 		}
+
+// 		const usernameRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// 		if (!usernameRegex.test(email)) {
+// 			return res
+// 				.status(400)
+// 				.json({ error: "Username must be a valid email address" });
+// 		}
+
+// 		if (password.length < 6) {
+// 			return res
+// 				.status(400)
+// 				.json({ error: "Password must be at least 6 characters" });
+// 		}
+
+// 		if (password !== confirmPassword) {
+// 			return res.status(400).json({ error: "Passwords do not match" });
+// 		}
+
+// 		const validationResponse = await fetch(
+// 			`https://api.hunter.io/v2/email-verifier?email=${email}&api_key=${process.env.API_KEY}`
+// 		);
+// 		const validationData = await validationResponse.json();
+
+// 		if (validationData.data.block) {
+// 			return res.status(400).json({
+// 				error: `Email address cant be verified bt SMTP server. Please try again later.`,
+// 			});
+// 		}
+
+// 		if (!validationData.data.gibberish) {
+// 			return res.status(400).json({
+// 				error: `Please dont use automatically generated email address`,
+// 			});
+// 		}
+
+// 		if (
+// 			validationData.data.status !== "valid" ||
+// 			validationData.data.result !== "deliverable"
+// 		) {
+// 			return res.status(400).json({
+// 				error: `${validationData.data.email} is not a valid mail address`,
+// 			});
+// 		}
+
+// 		if (!validationData.data.smtp_check) {
+// 			return res.status(400).json({
+// 				error: `${validationData.data.email} can't recieve any mail or invalid mail address`,
+// 			});
+// 		}
+
+// 		const user = await User.findOne({ email });
+
+// 		if (user) {
+// 			return res.status(400).json({ error: "User already exists" });
+// 		}
+
+// 		const salt = await bcryptjs.genSalt(10);
+// 		const hashedPassword = await bcryptjs.hash(password, salt);
+
+// 		const profilePic = `https://avatar.iran.liara.run/public/${
+// 			gender === "male" ? "boy" : "girl"
+// 		}?username=${email}`;
+
+// 		const newUser = new User({
+// 			fullName,
+// 			email,
+// 			password: hashedPassword,
+// 			gender,
+// 			profilePic,
+// 		});
+
+// 		if (newUser) {
+// 			generateTokenAndSetCookie(newUser._id, res);
+// 			await newUser.save();
+
+// 			res.status(200).json({
+// 				message: `Account created for: ${newUser.email} as ${newUser.fullName}`,
+// 				_id: newUser._id,
+// 				fullName: newUser.fullName,
+// 				email: newUser.email,
+// 				profilePicture: newUser.profilePicture,
+// 			});
+// 		} else {
+// 			res.status(400).json({ error: "Invalid user data" });
+// 		}
+// 	} catch (error) {
+// 		console.log("Error in signup controller: ", error.message);
+// 		res.status(500).json({ error: "Internal Server Error" });
+// 	}
+// };
