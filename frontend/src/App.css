@@ -435,14 +435,16 @@ svg.loader circle {
 
 /* Glassmorphism for popovers */
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation8.MuiPopover-paper.MuiMenu-paper.MuiMenu-paper.css-3dzjca-MuiPaper-root-MuiPopover-paper-MuiMenu-paper,
-.css-6hp17o-MuiList-root-MuiMenu-list {
+.css-6hp17o-MuiList-root-MuiMenu-list,
+.css-pwxzbm {
 	background-color: var(--bg-color) !important;
 	backdrop-filter: blur(3px) !important;
 	color: var(--text-color);
 }
 
 /* Glassmorphism for dialogs */
-.css-1t1j96h-MuiPaper-root-MuiDialog-paper {
+.css-1t1j96h-MuiPaper-root-MuiDialog-paper,
+.css-uhb5lp {
 	color: var(--text-color);
 	background-color: rgba(251, 251, 251, 0.25) !important;
 	backdrop-filter: blur(4px);
@@ -480,7 +482,7 @@ svg.loader circle {
 }
 
 ::-webkit-scrollbar-track {
-	background: rgb(31, 31, 31,0.2);
+	background: rgb(31, 31, 31, 0.2);
 	border-radius: 5px;
 }
 

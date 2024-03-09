@@ -14,7 +14,7 @@ const AddFriends = ({ toggleValue, setToggleValue }) => {
 		}
 	};
 	return (
-		<Dialog open={toggleValue.isAddFriendsOpen} onClose={handleClose}>
+		<Dialog open={toggleValue.isAddFriendsOpen} onClose={handleClose} >
 			<Stack
 				sx={{
 					width: {
