@@ -1,13 +1,30 @@
-import generateTokenAndSetCookie from "../utilities/generateToken.js";
+import generateTokenAndSetCookie, {
+	generateTokenAndSetCookieForForgot,
+} from "../utilities/generateToken.js";
 import User from "./../models/user.model.js";
 import bcryptjs from "bcryptjs";
+import nodemailer from "nodemailer";
+
+const transporter = nodemailer.createTransport({
+	service: "gmail",
+	auth: {
+		user: "adhikaryabhishek209@gmail.com",
+		pass: "hlvozctqavykwhjr",
+	},
+});
 
 // Signup using Abstract API
 export const signup = async (req, res) => {
 	try {
 		const { fullName, email, password, confirmPassword, gender } = req.body;
 
-		if (!fullName || !email || !password || !confirmPassword || !gender) {
+		if (
+			!fullName.trim() ||
+			!email.trim() ||
+			!password ||
+			!confirmPassword ||
+			!gender
+		) {
 			return res.status(400).json({ error: "All fields are required" });
 		}
 
@@ -140,6 +157,99 @@ export const logout = (req, res) => {
 		res.status(200).json({ message: "Logged out successfully" });
 	} catch (error) {
 		console.log("Error in logout controller: ", error.message);
+		res.status(500).json({ error: "Internal Server Error" });
+	}
+};
+
+export const forgot = async (req, res) => {
+	try {
+		const { email } = req.body;
+
+		if (!email.trim()) {
+			return res.status(400).json({ error: "All fields are required" });
+		}
+		const user = await User.findOne({ email });
+
+		if (!user) {
+			return res.status(400).json({ error: "Invalid email" });
+		}
+
+		const code = Math.floor(10000 + Math.random() * 90000);
+
+		const emailOptions = {
+			from: "adhikaryabhishek209@gmail.com",
+			to: email,
+			subject: "Password Reset: MERN Chat App",
+			html: `
+				<!DOCTYPE html>
+				<html>
+				<head>
+					<style>
+						.button {
+							background-color: #7b3dbd;
+							border: none;
+							color: #fff !important;
+							padding: 10px 20px;
+							text-align: center;
+							text-decoration: none;
+							display: inline-block;
+							font-size: 16px;
+							cursor: pointer;
+							outline: none;
+							border-radius: 8px;
+							user-select: none !important;
+						}
+						.button:hover{
+							background-color: #652acbce;
+						}
+						p{
+							font-weight: 400;
+							font-size: 18px;
+						}
+						u{
+							color: blue;
+						}
+						@media (max-width: 450px){
+							p{
+								font-size: 15px;
+							}
+							h2{
+								font-size: 1.75em;
+							}
+						}
+					</style>
+				</head>
+				<body>
+					<p>The password reset code you requested is:</p>
+					<h2>${code}</h2>
+					<p>To reset your password, please follow the instructions below.</p>
+					<br/>
+					<li>Go back to the <a href="">website</a> and enter the code.</li>
+					<br />
+					<br />
+					<p>For your security, <u>kindly do not share this password reset code with anyone else</u>.
+					It is unique to your account and should remain confidential.
+					<b>If you did not request this password reset, </b>please ignore this message.</p>
+				</body>
+				</html>
+			`,
+		};
+
+		transporter.sendMail(emailOptions, async (error) => {
+			if (error) {
+				console.log(error);
+				return res.status(500).json({ error: "Internal Server Error" });
+			} else {
+				user.token = code;
+				await user.save();
+				generateTokenAndSetCookieForForgot(user._id, res);
+				res.status(200).json({
+					message: `Password reset code sent to ${email}`,
+				});
+			}
+		});
+	} catch (error) {
+		console.log("Error in forgot controller: ", error.message);
 		res.status(500).json({ error: "Internal Server Error" });
 	}
 };

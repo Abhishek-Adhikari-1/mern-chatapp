@@ -16,6 +16,7 @@
     "@mui/icons-material": "^5.15.12",
     "@mui/material": "^5.15.12",
     "@preact/signals": "^1.2.2",
+    "mern-app": "file:..",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-helmet-async": "^2.0.4",

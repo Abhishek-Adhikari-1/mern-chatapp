@@ -4,13 +4,19 @@ import { useState } from "react";
 import InputComp from "./../../components/formComponents/InputComp";
 import ButtonComp from "./../../components/formComponents/ButtonComp";
 import Title from "../../components/domManipulation/Title";
+import useForgot from "../../hooks/useForgot";
 
 const Forgot = () => {
 	const [inputs, setInputs] = useState({
 		email: "",
-		password: "",
-		isButtonDisabled: false,
 	});
+
+	const { loading, forgot } = useForgot();
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		await forgot(inputs);
+	};
 	return (
 		<>
 			<Title title={"Forgot Password Page"} />
@@ -28,13 +34,7 @@ const Forgot = () => {
 					<p className="title">Forgot Password</p>
 					<form
 						className="form"
-						onSubmit={(e) => {
-							e.preventDefault();
-							setInputs({
-								...inputs,
-								isButtonDisabled: true,
-							});
-						}}>
+						onSubmit={handleSubmit}>
 						<InputComp
 							name={"email"}
 							type={"email"}
@@ -57,7 +57,7 @@ const Forgot = () => {
 						<ButtonComp
 							type={"submit"}
 							value={"Send E-mail"}
-							isButtonDisabled={inputs.isButtonDisabled}
+							isButtonDisabled={loading}
 						/>
 					</form>
 					<div className="social-message">

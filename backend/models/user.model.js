@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema(
 			type: String,
 			default: "",
 		},
+		token: {
+			type: Number,
+			default: null,
+		},
 	},
 	{ timestamps: true }
 );

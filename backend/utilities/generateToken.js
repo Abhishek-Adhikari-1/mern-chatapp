@@ -12,4 +12,18 @@ const generateTokenAndSetCookie = (userId, res) => {
 	});
 };
 
+export const generateTokenAndSetCookieForForgot = (userId, res) => {
+	const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+		expiresIn: "1h",
+	});
+	res.cookie("forgot", token, {
+		httpOnly: true,
+		secure: process.env.NODE_ENV !== "development",
+		maxAge: 3600 * 1000,
+		sameSite: "strict",
+	});
+};
+
+
+
 export default generateTokenAndSetCookie;

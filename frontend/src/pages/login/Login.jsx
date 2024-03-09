@@ -10,10 +10,9 @@ const Login = () => {
 	const [inputs, setInputs] = useState({
 		email: "",
 		password: "",
-		isButtonDisabled: false,
 	});
 
-	const {loading, login}= useLogin()
+	const { loading, login } = useLogin();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
