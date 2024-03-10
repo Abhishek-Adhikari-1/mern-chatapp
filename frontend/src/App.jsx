@@ -12,6 +12,8 @@ const Signup = lazy(() => import("./pages/signup/Signup"));
 const Forgot = lazy(() => import("./pages/forgot/Forgot"));
 const Home = lazy(() => import("./pages/home/Home"));
 const NotFound = lazy(() => import("./pages/notFound/NotFound"));
+const UserProfilePage = lazy(() => import("./pages/profile/profile"));
+
 
 const App = () => {
 	const { authUser } = useAuthContext();
@@ -47,11 +49,7 @@ const App = () => {
 						path="/login"
 						element={
 							<ProtectRoute user={!authUser} redirect="/">
-								{authUser ? (
-									<Navigate to={"/"} />
-								) : (
-									<Login />
-								)}
+								{authUser ? <Navigate to={"/"} /> : <Login />}
 							</ProtectRoute>
 						}
 					/>
@@ -77,6 +75,10 @@ const App = () => {
 									<Navigate to={"/login"} />
 								)
 							}
+						/>
+						<Route
+							path="/userProfile"
+							element={authUser && <UserProfilePage />}
 						/>
 					</Route>
 					<Route path="*" element={<NotFound />} />

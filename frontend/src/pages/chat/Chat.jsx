@@ -1,3 +1,4 @@
+import "regenerator-runtime/runtime";
 import {
 	Box,
 	Button,
@@ -10,6 +11,9 @@ import {
 } from "@mui/material";
 import ImageIcon from "@mui/icons-material/Image";
 import { useEffect, useRef, useState } from "react";
+import SpeechRecognition, {
+	useSpeechRecognition,
+} from "react-speech-recognition";
 
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
@@ -21,10 +25,115 @@ import useSendMessage from "../../hooks/useSendMessage";
 import MessageComp from "../../components/message/MessageComp";
 import { useParams } from "react-router-dom";
 import useListenMessages from "../../hooks/useListenMessages";
+import toast from "react-hot-toast";
 
 const Chat = () => {
 	const { chatListLoading, messages } = useConversation();
+	const [state, setState] = useState({
+		anchorEl: null,
+		message: "",
+	});
 	useListenMessages();
+
+	const commands = [
+		{
+			command: "reset",
+			callback: () => resetTranscript(),
+		},
+		{
+			command: "shut up",
+			callback: () => alert("I wasn't talking."),
+		},
+		{
+			command: "Hello abhi",
+			callback: () => alert("Hello! k xa."),
+		},
+	];
+	const { transcript, resetTranscript, listening } = useSpeechRecognition({
+		commands,
+	});
+
+	if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
+		alert(
+			"Your browser does not support speech recognition software! Try Chrome desktop, maybe?"
+		);
+	}
+
+	const listenContinuously = () => {
+		SpeechRecognition.startListening({
+			continuous: true,
+			language: "en-IN",
+		});
+	};
+
+	useEffect(() => {
+		if (transcript !== "") {
+			setState({
+				...state,
+				message: transcript,
+			});
+			return;
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [transcript]);
+
+	useEffect(() => {
+		if (listening) {
+			listenContinuously();
+			toast(
+				() => (
+					<span>
+						<Box component={"span"}>
+							<b
+								style={{
+									display: "flex",
+								}}>
+								Listening
+								<div id="bars"></div>
+							</b>
+						</Box>
+						<p>Speak a loud for better recognition</p>
+						<Box
+							component={"span"}
+							sx={{
+								display: "flex",
+								justifyContent: "space-evenly",
+								marginTop: "10px",
+							}}>
+							<Button
+								size={"small"}
+								color={"error"}
+								onClick={() => {
+									SpeechRecognition.stopListening();
+									setState({
+										...state,
+										message: "",
+									});
+									resetTranscript();
+								}}>
+								Cancel
+							</Button>
+							<Button
+								size={"small"}
+								variant="outlined"
+								onClick={() => {
+									SpeechRecognition.stopListening();
+								}}>
+								Stop
+							</Button>
+						</Box>
+					</span>
+				),
+				{
+					duration: Infinity,
+				}
+			);
+		} else {
+			SpeechRecognition.stopListening();
+			toast.dismiss();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [listening]);
 
 	const { sendMessage } = useSendMessage();
 	const { chatid } = useParams();
@@ -32,10 +141,6 @@ const Chat = () => {
 	const scrollToBottom = () => {
 		endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
 	};
-	const [state, setState] = useState({
-		anchorEl: null,
-		message: "",
-	});
 
 	useEffect(() => {
 		setTimeout(scrollToBottom, 300);
@@ -59,12 +164,44 @@ const Chat = () => {
 		setState({ ...state, anchorEl: null });
 	};
 
-	const handleMessageSubmit = async (e) => {
-		e.preventDefault();
+	const handleKeyPress = (e) => {
+		if (
+			e.key === "Enter" &&
+			!e.shiftKey &&
+			!("ontouchstart" in window || navigator.maxTouchPoints)
+		) {
+			e.preventDefault();
+			handleMessageSubmit();
+		}
+	};
+
+	const handleMessageSubmit = async () => {
 		if (state.message.trim() === "") return;
 		await sendMessage(state.message);
 		setState({ ...state, message: "" });
 		scrollToBottom();
+		SpeechRecognition.stopListening();
+		resetTranscript();
+	};
+
+	const checkMicrophonePermission = async () => {
+		try {
+			const permissionStatus = await navigator.permissions.query({
+				name: "microphone",
+			});
+			if (permissionStatus.state === "granted") {
+				listenContinuously();
+			} else if (permissionStatus.state === "prompt") {
+				await navigator.mediaDevices.getUserMedia({ audio: true });
+				listenContinuously();
+			} else {
+				alert(
+					"Microphone access is denied. Please enable it in your browser settings."
+				);
+			}
+		} catch (error) {
+			console.error("Error checking microphone permission:", error);
+		}
 	};
 
 	return (
@@ -119,7 +256,11 @@ const Chat = () => {
 										<InsertDriveFileIcon />
 										{"‎ ‎ "}Files
 									</MenuItem>
-									<MenuItem>
+									<MenuItem
+										onClick={() => {
+											handleCloseUserMenu();
+											checkMicrophonePermission();
+										}}>
 										<RecordVoiceOverIcon />
 										Voice Recognition
 									</MenuItem>
@@ -130,7 +271,7 @@ const Chat = () => {
 									value={state.message}
 									minRows={1}
 									maxRows={4}
-									// onKeyDown={handleKeyPress}
+									onKeyDown={handleKeyPress}
 									onChange={(e) => {
 										setState({
 											...state,

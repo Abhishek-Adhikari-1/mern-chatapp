@@ -22,6 +22,7 @@ import Notifications from "../specific/Notifications";
 import AddFriends from "../specific/AddFriends";
 import useLogout from "./../../hooks/useLogout";
 import { useAuthContext } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const pages = ["Products", "Pricing", "Blog"];
 
@@ -246,20 +247,27 @@ function ResponsiveAppBar() {
 								}}
 								open={Boolean(toggleValue.anchorElUser)}
 								onClose={handleCloseUserMenu}>
-								<MenuItem
-									onClick={handleCloseUserMenu}
-									sx={{
+								<Link
+									to={"/userProfile"}
+									style={{
+										textDecoration: "none",
 										userSelect: "none",
+										color: "rgb(46, 51, 63)",
+									}}
+									onClick={() => {
+										handleCloseUserMenu;
 									}}>
-									<Typography
-										textAlign="center"
-										sx={{
-											color: "rgb(65, 72, 72)",
-											userSelect: "none",
-										}}>
-										Profile
-									</Typography>
-								</MenuItem>
+									<MenuItem>
+										<Typography
+											textAlign="center"
+											sx={{
+												color: "rgb(65, 72, 72)",
+												userSelect: "none",
+											}}>
+											Profile
+										</Typography>
+									</MenuItem>
+								</Link>
 								<MenuItem
 									onClick={handleCloseUserMenu}
 									sx={{
