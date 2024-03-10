@@ -95,7 +95,7 @@ const ChatItem = ({
 				<CircleIcon
 					sx={{
 						width: "12px",
-						color: isOnline ? "##419c45" : "##949494",
+						color: isOnline ? "#419c45" : "#949494",
 					}}
 				/>
 			</Box>
