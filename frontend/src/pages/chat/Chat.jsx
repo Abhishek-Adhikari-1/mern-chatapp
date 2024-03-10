@@ -226,7 +226,12 @@ const Chat = () => {
 						<MessageComp />
 						<div ref={endOfMessagesRef} />
 					</Box>
-					<form method="post" onSubmit={handleMessageSubmit}>
+					<form
+						method="post"
+						onSubmit={(e) => {
+							e.preventDefault();
+							handleMessageSubmit();
+						}}>
 						<Stack
 							direction={"row"}
 							spacing={1}
